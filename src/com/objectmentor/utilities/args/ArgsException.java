@@ -1,3 +1,5 @@
+package com.objectmentor.utilities.args;
+
 public class ArgsException extends Exception {
 	private char errorArgumentId = '\0';
 	private String errorParameter = null;
@@ -77,6 +79,8 @@ public class ArgsException extends Exception {
 			case INVALID_ARGUMENT_FORMAT:
 				return String.format("'%s' is not a valid argument format.",
 						errorParameter);
+			default:
+				break;
 		}
 		return "";
 	}
@@ -85,6 +89,6 @@ public class ArgsException extends Exception {
 		OK, INVALID_ARGUMENT_FORMAT, UNEXPECTED_ARGUMENT, INVALID_ARGUMENT_NAME,
 		MISSING_STRING,
 		MISSING_INTEGER, INVALID_INTEGER,
-		MISSING_DOUBLE, INVALID_DOUBLE
+		MISSING_DOUBLE, INVALID_DOUBLE, INVALID_FORMAT
 	}
 }
