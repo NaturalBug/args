@@ -3,6 +3,8 @@ package com.objectmentor.utilities.getopts;
 import java.text.ParseException;
 import java.util.*;
 
+import com.objectmentor.utilities.args.ArgsException;
+
 public class Args {
 	private String schema;
 	private String[] args;
@@ -10,23 +12,24 @@ public class Args {
 	private Set<Character> unexpectedArguments = new TreeSet<Character>();
 	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<Character, ArgumentMarshaler>();
 	private Map<Character, ArgumentMarshaler> stringArgs = new HashMap<Character, ArgumentMarshaler>();
+	private Map<Character, ArgumentMarshaler> intArgs = new HashMap<Character, ArgumentMarshaler>();
 	private Set<Character> argsFound = new HashSet<Character>();
 	private int currentArgument;
-	private char errorArgument = '\0';
-
-	enum ErrorCode {
-		OK, MISSING_STRING
-	}
-
+	private char errorArgumentId = '\0';
+	private String errorParameter = "TILT";
 	private ErrorCode errorCode = ErrorCode.OK;
 
-	public Args(String schema, String[] args) throws ParseException {
+	enum ErrorCode {
+		OK, MISSING_STRING, MISSING_INTEGER
+	}
+
+	public Args(String schema, String[] args) throws ParseException, ArgsException {
 		this.schema = schema;
 		this.args = args;
 		valid = parse();
 	}
 
-	private boolean parse() throws ParseException {
+	private boolean parse() throws ParseException, ArgsException {
 		if (schema.length() == 0 && args.length == 0)
 			return true;
 		parseSchema();
@@ -77,7 +80,7 @@ public class Args {
 		booleanArgs.put(elementId, new BooleanArgumentMarshaler());
 	}
 
-	private boolean parseArguments() {
+	private boolean parseArguments() throws ArgsException {
 		for (currentArgument = 0; currentArgument < args.length; currentArgument++) {
 			String arg = args[currentArgument];
 			parseArgument(arg);
@@ -85,17 +88,17 @@ public class Args {
 		return true;
 	}
 
-	private void parseArgument(String arg) {
+	private void parseArgument(String arg) throws ArgsException {
 		if (arg.startsWith("-"))
 			parseElements(arg);
 	}
 
-	private void parseElements(String arg) {
+	private void parseElements(String arg) throws ArgsException {
 		for (int i = 1; i < arg.length(); i++)
 			parseElement(arg.charAt(i));
 	}
 
-	private void parseElement(char argChar) {
+	private void parseElement(char argChar) throws ArgsException {
 		if (setArgument(argChar))
 			argsFound.add(argChar);
 		else {
@@ -104,7 +107,7 @@ public class Args {
 		}
 	}
 
-	private boolean setArgument(char argChar) {
+	private boolean setArgument(char argChar) throws ArgsException {
 		boolean set = true;
 		if (isBoolean(argChar))
 			setBooleanArg(argChar, true);
@@ -116,13 +119,13 @@ public class Args {
 		return set;
 	}
 
-	private void setStringArg(char argChar, String s) {
+	private void setStringArg(char argChar, String s) throws ArgsException {
 		currentArgument++;
 		try {
 			stringArgs.get(argChar).setString(args[currentArgument]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			valid = false;
-			errorArgument = argChar;
+			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_STRING;
 		}
 	}
@@ -137,6 +140,26 @@ public class Args {
 
 	private boolean isBoolean(char argChar) {
 		return booleanArgs.containsKey(argChar);
+	}
+
+	private void setIntArgs(char argChar) throws ArgsException {
+		currentArgument++;
+		String parameter = null;
+		try {
+			parameter = args[currentArgument];
+			intArgs.get(argChar).setInteger(Integer.parseInt(parameter));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorCode = ErrorCode.MISSING_INTEGER;
+			throw new ArgsException();
+		} catch (NumberFormatException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorParameter = parameter;
+			errorCode = ErrorCode.MISSING_INTEGER;
+			throw new ArgsException();
+		}
 	}
 
 	public int cardinality() {
@@ -157,7 +180,7 @@ public class Args {
 			switch (errorCode) {
 				case MISSING_STRING:
 					return String.format("Could not find string parameter for -%c.",
-							errorArgument);
+							errorArgumentId);
 				case OK:
 					throw new Exception("TILT: Should not get here.");
 			}
@@ -184,6 +207,11 @@ public class Args {
 		return am == null ? "" : am.getString();
 	}
 
+	public int getInt(char arg) {
+		ArgumentMarshaler am = intArgs.get(arg);
+		return am == null ? 0 : am.getInteger();
+	}
+
 	public boolean has(char arg) {
 		return argsFound.contains(arg);
 	}
@@ -191,4 +219,5 @@ public class Args {
 	public boolean isValid() {
 		return valid;
 	}
+
 }
