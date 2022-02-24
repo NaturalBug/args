@@ -9,7 +9,7 @@ public class Args {
 	private boolean valid = true;
 	private Set<Character> unexpectedArguments = new TreeSet<Character>();
 	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<Character, ArgumentMarshaler>();
-	private Map<Character, String> stringArgs = new HashMap<Character, String>();
+	private Map<Character, ArgumentMarshaler> stringArgs = new HashMap<Character, ArgumentMarshaler>();
 	private Set<Character> argsFound = new HashSet<Character>();
 	private int currentArgument;
 	private char errorArgument = '\0';
@@ -62,7 +62,7 @@ public class Args {
 	}
 
 	private void parseStringSchemaElement(char elementId) {
-		stringArgs.put(elementId, "");
+		stringArgs.put(elementId, new StringArgumentMarshaler());
 	}
 
 	private boolean isStringSchemaElement(String elementTail) {
@@ -119,7 +119,7 @@ public class Args {
 	private void setStringArg(char argChar, String s) {
 		currentArgument++;
 		try {
-			stringArgs.put(argChar, args[currentArgument]);
+			stringArgs.get(argChar).setString(args[currentArgument]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			valid = false;
 			errorArgument = argChar;
@@ -180,11 +180,8 @@ public class Args {
 	}
 
 	public String getString(char arg) {
-		return blankIfNull(stringArgs.get(arg));
-	}
-
-	private String blankIfNull(String s) {
-		return s == null ? "" : s;
+		ArgumentMarshaler am = stringArgs.get(arg);
+		return am == null ? "" : am.getString();
 	}
 
 	public boolean has(char arg) {
