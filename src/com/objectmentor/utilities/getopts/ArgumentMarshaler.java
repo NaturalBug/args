@@ -1,14 +1,10 @@
 package com.objectmentor.utilities.getopts;
 
-public class ArgumentMarshaler {
+public abstract class ArgumentMarshaler {
 
-	private Boolean booleanValue = false;
+	protected Boolean booleanValue = false;
 	private String stringValue;
 	private int integerValue;
-
-	public void setBoolean(boolean value) {
-		booleanValue = value;
-	}
 
 	public Boolean getBoolean() {
 		return booleanValue;
@@ -29,4 +25,6 @@ public class ArgumentMarshaler {
 	public int getInteger() {
 		return integerValue;
 	}
+
+	public abstract void set(String s);
 }
