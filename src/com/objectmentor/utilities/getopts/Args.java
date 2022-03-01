@@ -3,6 +3,8 @@ package com.objectmentor.utilities.getopts;
 import java.text.ParseException;
 import java.util.*;
 
+import javax.swing.text.html.HTMLDocument.RunElement;
+
 import com.objectmentor.utilities.args.ArgsException;
 
 public class Args {
@@ -126,11 +128,11 @@ public class Args {
 
 	private boolean setArgument(char argChar) throws ArgsException {
 		boolean set = true;
-		if (isBoolean(argChar))
+		if (isBooleanArg(argChar))
 			setBooleanArg(argChar, true);
-		else if (isString(argChar))
+		else if (isStringArg(argChar))
 			setStringArg(argChar, "");
-		else if (isInteger(argChar))
+		else if (isIntegerArg(argChar))
 			setIntArgs(argChar);
 		else
 			set = false;
@@ -138,8 +140,9 @@ public class Args {
 		return set;
 	}
 
-	private boolean isBoolean(char argChar) {
-		return booleanArgs.containsKey(argChar);
+	private boolean isBooleanArg(char argChar) {
+		ArgumentMarshaler m = marshalers.get(argChar);
+		return m instanceof BooleanArgumentMarshaler;
 	}
 
 	private void setBooleanArg(char argChar, boolean value) {
@@ -149,8 +152,9 @@ public class Args {
 		}
 	}
 
-	private boolean isString(char argChar) {
-		return stringArgs.containsKey(argChar);
+	private boolean isStringArg(char argChar) {
+		ArgumentMarshaler m = marshalers.get(argChar);
+		return m instanceof StringArgumentMarshaler;
 	}
 
 	private void setStringArg(char argChar, String s) throws ArgsException {
@@ -164,8 +168,9 @@ public class Args {
 		}
 	}
 
-	private boolean isInteger(char argChar) {
-		return false;
+	private boolean isIntegerArg(char argChar) {
+		ArgumentMarshaler m = marshalers.get(argChar);
+		return m instanceof IntegerArgumentMarshaler;
 	}
 
 	private void setIntArgs(char argChar) throws ArgsException {
