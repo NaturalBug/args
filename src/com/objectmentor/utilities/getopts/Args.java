@@ -199,7 +199,7 @@ public class Args {
 
 	public boolean getBoolean(char arg) {
 		ArgumentMarshaler am = booleanArgs.get(arg);
-		return am != null && am.getBoolean();
+		return am != null && (Boolean) am.get();
 	}
 
 	public String getString(char arg) {

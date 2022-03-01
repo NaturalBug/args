@@ -6,10 +6,6 @@ public abstract class ArgumentMarshaler {
 	private String stringValue;
 	private int integerValue;
 
-	public Boolean getBoolean() {
-		return booleanValue;
-	}
-
 	public void setString(String s) {
 		stringValue = s;
 	}
@@ -27,4 +23,6 @@ public abstract class ArgumentMarshaler {
 	}
 
 	public abstract void set(String s);
+
+	public abstract Object get();
 }

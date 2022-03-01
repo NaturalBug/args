@@ -8,4 +8,10 @@ public class StringArgumentMarshaler extends ArgumentMarshaler {
 
 	}
 
+	@Override
+	public Object get() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

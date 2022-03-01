@@ -5,4 +5,8 @@ public class BooleanArgumentMarshaler extends ArgumentMarshaler {
 		booleanValue = true;
 	}
 
+	public Object get() {
+		return booleanValue;
+	}
+
 }
