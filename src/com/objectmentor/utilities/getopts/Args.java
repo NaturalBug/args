@@ -128,11 +128,11 @@ public class Args {
 
 	private boolean setArgument(char argChar) throws ArgsException {
 		ArgumentMarshaler m = marshalers.get(argChar);
-		if (isBooleanArg(m))
+		if (m instanceof BooleanArgumentMarshaler)
 			setBooleanArg(argChar, true);
-		else if (isStringArg(m))
+		else if (m instanceof StringArgumentMarshaler)
 			setStringArg(argChar, "");
-		else if (isIntegerArg(m))
+		else if (m instanceof IntegerArgumentMarshaler)
 			setIntArgs(argChar);
 		else
 			return false;
@@ -140,19 +140,11 @@ public class Args {
 		return true;
 	}
 
-	private boolean isBooleanArg(ArgumentMarshaler m) {
-		return m instanceof BooleanArgumentMarshaler;
-	}
-
 	private void setBooleanArg(char argChar, boolean value) {
 		try {
 			booleanArgs.get(argChar).set("true");
 		} catch (ArgsException e) {
 		}
-	}
-
-	private boolean isStringArg(ArgumentMarshaler m) {
-		return m instanceof StringArgumentMarshaler;
 	}
 
 	private void setStringArg(char argChar, String s) throws ArgsException {
@@ -164,10 +156,6 @@ public class Args {
 			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_STRING;
 		}
-	}
-
-	private boolean isIntegerArg(ArgumentMarshaler m) {
-		return m instanceof IntegerArgumentMarshaler;
 	}
 
 	private void setIntArgs(char argChar) throws ArgsException {
