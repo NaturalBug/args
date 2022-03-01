@@ -1,17 +1,14 @@
 package com.objectmentor.utilities.getopts;
 
 public class StringArgumentMarshaler extends ArgumentMarshaler {
+	private String stringValue = "";
 
-	@Override
 	public void set(String s) {
-		// TODO Auto-generated method stub
-
+		stringValue = s;
 	}
 
-	@Override
 	public Object get() {
-		// TODO Auto-generated method stub
-		return null;
+		return stringValue;
 	}
 
 }
