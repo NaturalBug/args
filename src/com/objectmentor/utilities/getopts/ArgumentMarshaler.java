@@ -1,17 +1,9 @@
 package com.objectmentor.utilities.getopts;
 
+import com.objectmentor.utilities.args.ArgsException;
+
 public abstract class ArgumentMarshaler {
-	private int integerValue;
-
-	public void setInteger(int i) {
-		integerValue = i;
-	}
-
-	public int getInteger() {
-		return integerValue;
-	}
-
-	public abstract void set(String s);
+	public abstract void set(String s) throws ArgsException;
 
 	public abstract Object get();
 }

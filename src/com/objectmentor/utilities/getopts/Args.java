@@ -55,6 +55,8 @@ public class Args {
 			parseBooleanSchemaElement(elementId);
 		else if (isStringSchemaElement(elementTail))
 			parseStringSchemaElement(elementId);
+		else if (isIntegerSchemaElement(elementTail))
+			parseIntegerSchemaElement(elementId);
 	}
 
 	private void validateSchemaElementId(char elementId) throws ParseException {
@@ -64,12 +66,12 @@ public class Args {
 		}
 	}
 
-	private void parseStringSchemaElement(char elementId) {
-		stringArgs.put(elementId, new StringArgumentMarshaler());
-	}
-
 	private boolean isStringSchemaElement(String elementTail) {
 		return elementTail.equals("*");
+	}
+
+	private void parseStringSchemaElement(char elementId) {
+		stringArgs.put(elementId, new StringArgumentMarshaler());
 	}
 
 	private boolean isBooleanSchemaElement(String elementTail) {
@@ -78,6 +80,14 @@ public class Args {
 
 	private void parseBooleanSchemaElement(char elementId) {
 		booleanArgs.put(elementId, new BooleanArgumentMarshaler());
+	}
+
+	private boolean isIntegerSchemaElement(String elementTail) {
+		return false;
+	}
+
+	private void parseIntegerSchemaElement(char elementId) {
+		intArgs.put(elementId, new IntegerArgumentMarshaler());
 	}
 
 	private boolean parseArguments() throws ArgsException {
@@ -113,10 +123,27 @@ public class Args {
 			setBooleanArg(argChar, true);
 		else if (isString(argChar))
 			setStringArg(argChar, "");
+		else if (isInteger(argChar))
+			setIntArgs(argChar);
 		else
 			set = false;
 
 		return set;
+	}
+
+	private boolean isBoolean(char argChar) {
+		return booleanArgs.containsKey(argChar);
+	}
+
+	private void setBooleanArg(char argChar, boolean value) {
+		try {
+			booleanArgs.get(argChar).set("true");
+		} catch (ArgsException e) {
+		}
+	}
+
+	private boolean isString(char argChar) {
+		return stringArgs.containsKey(argChar);
 	}
 
 	private void setStringArg(char argChar, String s) throws ArgsException {
@@ -130,16 +157,8 @@ public class Args {
 		}
 	}
 
-	private boolean isString(char argChar) {
-		return stringArgs.containsKey(argChar);
-	}
-
-	private void setBooleanArg(char argChar, boolean value) {
-		booleanArgs.get(argChar).set("true");
-	}
-
-	private boolean isBoolean(char argChar) {
-		return booleanArgs.containsKey(argChar);
+	private boolean isInteger(char argChar) {
+		return false;
 	}
 
 	private void setIntArgs(char argChar) throws ArgsException {
@@ -147,18 +166,18 @@ public class Args {
 		String parameter = null;
 		try {
 			parameter = args[currentArgument];
-			intArgs.get(argChar).setInteger(Integer.parseInt(parameter));
+			intArgs.get(argChar).set(parameter);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			valid = false;
 			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_INTEGER;
 			throw new ArgsException();
-		} catch (NumberFormatException e) {
+		} catch (ArgsException e) {
 			valid = false;
 			errorArgumentId = argChar;
 			errorParameter = parameter;
 			errorCode = ErrorCode.MISSING_INTEGER;
-			throw new ArgsException();
+			throw e;
 		}
 	}
 
@@ -183,6 +202,10 @@ public class Args {
 							errorArgumentId);
 				case OK:
 					throw new Exception("TILT: Should not get here.");
+				case MISSING_INTEGER:
+					break;
+				default:
+					break;
 			}
 		return "";
 	}
@@ -209,7 +232,7 @@ public class Args {
 
 	public int getInt(char arg) {
 		ArgumentMarshaler am = intArgs.get(arg);
-		return am == null ? 0 : am.getInteger();
+		return am == null ? 0 : (Integer) am.get();
 	}
 
 	public boolean has(char arg) {
