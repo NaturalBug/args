@@ -3,8 +3,6 @@ package com.objectmentor.utilities.getopts;
 import java.text.ParseException;
 import java.util.*;
 
-import javax.swing.text.html.HTMLDocument.RunElement;
-
 import com.objectmentor.utilities.args.ArgsException;
 
 public class Args {
@@ -129,7 +127,7 @@ public class Args {
 	private boolean setArgument(char argChar) throws ArgsException {
 		ArgumentMarshaler m = marshalers.get(argChar);
 		if (m instanceof BooleanArgumentMarshaler)
-			setBooleanArg(argChar, true);
+			setBooleanArg(m);
 		else if (m instanceof StringArgumentMarshaler)
 			setStringArg(argChar, "");
 		else if (m instanceof IntegerArgumentMarshaler)
@@ -140,9 +138,9 @@ public class Args {
 		return true;
 	}
 
-	private void setBooleanArg(char argChar, boolean value) {
+	private void setBooleanArg(ArgumentMarshaler m) {
 		try {
-			booleanArgs.get(argChar).set("true");
+			m.set("true"); // was: booleanArgs.get(argChar).set("true");
 		} catch (ArgsException e) {
 		}
 	}
