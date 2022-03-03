@@ -3,7 +3,7 @@ package com.objectmentor.utilities.getopts;
 import com.objectmentor.utilities.args.ArgsException;
 
 public class IntegerArgumentMarshaler extends ArgumentMarshaler {
-	private int intValue;
+	private int intValue = 0;
 
 	public void set(String s) throws ArgsException {
 		try {
