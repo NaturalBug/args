@@ -126,15 +126,20 @@ public class Args {
 
 	private boolean setArgument(char argChar) throws ArgsException {
 		ArgumentMarshaler m = marshalers.get(argChar);
-		if (m instanceof BooleanArgumentMarshaler)
-			setBooleanArg(m);
-		else if (m instanceof StringArgumentMarshaler)
-			setStringArg(argChar, "");
-		else if (m instanceof IntegerArgumentMarshaler)
-			setIntArgs(argChar);
-		else
-			return false;
-
+		try {
+			if (m instanceof BooleanArgumentMarshaler)
+				setBooleanArg(m);
+			else if (m instanceof StringArgumentMarshaler)
+				setStringArg(m);
+			else if (m instanceof IntegerArgumentMarshaler)
+				setIntArgs(m);
+			else
+				return false;
+		} catch (ArgsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			throw e;
+		}
 		return true;
 	}
 
@@ -145,31 +150,26 @@ public class Args {
 		}
 	}
 
-	private void setStringArg(char argChar, String s) throws ArgsException {
+	private void setStringArg(ArgumentMarshaler m) throws ArgsException {
 		currentArgument++;
 		try {
-			stringArgs.get(argChar).set(args[currentArgument]);
+			m.set(args[currentArgument]);
 		} catch (ArrayIndexOutOfBoundsException e) {
-			valid = false;
-			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_STRING;
+			throw new ArgsException();
 		}
 	}
 
-	private void setIntArgs(char argChar) throws ArgsException {
+	private void setIntArgs(ArgumentMarshaler m) throws ArgsException {
 		currentArgument++;
 		String parameter = null;
 		try {
 			parameter = args[currentArgument];
-			intArgs.get(argChar).set(parameter);
+			m.set(parameter);
 		} catch (ArrayIndexOutOfBoundsException e) {
-			valid = false;
-			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_INTEGER;
 			throw new ArgsException();
 		} catch (ArgsException e) {
-			valid = false;
-			errorArgumentId = argChar;
 			errorParameter = parameter;
 			errorCode = ErrorCode.MISSING_INTEGER;
 			throw e;
