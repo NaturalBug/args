@@ -7,15 +7,15 @@ import com.objectmentor.utilities.args.ArgsException;
 
 public class Args {
 	private String schema;
-	private String[] args;
 	private boolean valid = true;
 	private Set<Character> unexpectedArguments = new TreeSet<Character>();
 	private Map<Character, ArgumentMarshaler> marshalers = new HashMap<Character, ArgumentMarshaler>();
 	private Set<Character> argsFound = new HashSet<Character>();
-	private int currentArgument;
+	private Iterator<String> currentArgument;
 	private char errorArgumentId = '\0';
 	private String errorParameter = "TILT";
 	private ErrorCode errorCode = ErrorCode.OK;
+	private List<String> argList;
 
 	enum ErrorCode {
 		OK, MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER, UNEXPECTED_ARGUMENT
@@ -23,12 +23,12 @@ public class Args {
 
 	public Args(String schema, String[] args) throws ParseException {
 		this.schema = schema;
-		this.args = args;
+		argList = Arrays.asList(args);
 		valid = parse();
 	}
 
 	private boolean parse() throws ParseException {
-		if (schema.length() == 0 && args.length == 0)
+		if (schema.length() == 0 && argList.size() == 0)
 			return true;
 		parseSchema();
 		try {
@@ -82,8 +82,8 @@ public class Args {
 	}
 
 	private boolean parseArguments() throws ArgsException {
-		for (currentArgument = 0; currentArgument < args.length; currentArgument++) {
-			String arg = args[currentArgument];
+		for (currentArgument = argList.iterator(); currentArgument.hasNext();) {
+			String arg = currentArgument.next();
 			parseArgument(arg);
 		}
 		return true;
@@ -135,22 +135,20 @@ public class Args {
 	}
 
 	private void setStringArg(ArgumentMarshaler m) throws ArgsException {
-		currentArgument++;
 		try {
-			m.set(args[currentArgument]);
-		} catch (ArrayIndexOutOfBoundsException e) {
+			m.set(currentArgument.next());
+		} catch (NoSuchElementException e) {
 			errorCode = ErrorCode.MISSING_STRING;
 			throw new ArgsException();
 		}
 	}
 
 	private void setIntArgs(ArgumentMarshaler m) throws ArgsException {
-		currentArgument++;
 		String parameter = null;
 		try {
-			parameter = args[currentArgument];
+			parameter = currentArgument.next();
 			m.set(parameter);
-		} catch (ArrayIndexOutOfBoundsException e) {
+		} catch (NoSuchElementException e) {
 			errorCode = ErrorCode.MISSING_INTEGER;
 			throw new ArgsException();
 		} catch (ArgsException e) {
