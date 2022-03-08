@@ -52,12 +52,14 @@ public class Args {
 		char elementId = element.charAt(0);
 		String elementTail = element.substring(1);
 		validateSchemaElementId(elementId);
-		if (isBooleanSchemaElement(elementTail)) {
-			marshalers.put(elementId, (ArgumentMarshaler) new BooleanArgumentMarshaler());
-		} else if (isStringSchemaElement(elementTail)) {
-			marshalers.put(elementId, (ArgumentMarshaler) new StringArgumentMarshaler());
-		} else if (isIntegerSchemaElement(elementTail)) {
-			marshalers.put(elementId, (ArgumentMarshaler) new IntegerArgumentMarshaler());
+		if (elementTail.length() == 0) {
+			marshalers.put(elementId, new BooleanArgumentMarshaler());
+		} else if (elementTail.equals("*")) {
+			marshalers.put(elementId, new StringArgumentMarshaler());
+		} else if (elementTail.equals("#")) {
+			marshalers.put(elementId, new IntegerArgumentMarshaler());
+		} else if (elementTail.equals("##")) {
+			marshalers.put(elementId, new DoubleArgumentMarshaler());
 		} else {
 			throw new ParseException(String.format("Argument: %c has invalid format: %s", elementId, elementTail), 0);
 		}
@@ -67,18 +69,6 @@ public class Args {
 		if (!Character.isLetter(elementId)) {
 			throw new ParseException("Bad character:" + elementId + "in Args format: " + schema, 0);
 		}
-	}
-
-	private boolean isBooleanSchemaElement(String elementTail) {
-		return elementTail.length() == 0;
-	}
-
-	private boolean isStringSchemaElement(String elementTail) {
-		return elementTail.equals("*");
-	}
-
-	private boolean isIntegerSchemaElement(String elementTail) {
-		return false;
 	}
 
 	private boolean parseArguments() throws ArgsException {
@@ -187,6 +177,15 @@ public class Args {
 			return 0;
 		}
 
+	}
+
+	public double getDouble(char arg) {
+		ArgumentMarshaler am = marshalers.get(arg);
+		try {
+			return am == null ? 0 : (Double) am.get();
+		} catch (Exception e) {
+			return 0.0;
+		}
 	}
 
 	public boolean has(char arg) {
