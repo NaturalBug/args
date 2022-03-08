@@ -2,7 +2,7 @@ package com.objectmentor.utilities.args;
 
 public class ArgsException extends Exception {
 	private char errorArgumentId = '\0';
-	private String errorParameter = null;
+	private String errorParameter = "TILT";
 	private ErrorCode errorCode = ErrorCode.OK;
 
 	public ArgsException() {
@@ -21,8 +21,7 @@ public class ArgsException extends Exception {
 		this.errorParameter = errorParameter;
 	}
 
-	public ArgsException(ErrorCode errorCode,
-			char errorArgumentId, String errorParameter) {
+	public ArgsException(ErrorCode errorCode, char errorArgumentId, String errorParameter) {
 		this.errorCode = errorCode;
 		this.errorParameter = errorParameter;
 		this.errorArgumentId = errorArgumentId;
@@ -86,9 +85,9 @@ public class ArgsException extends Exception {
 	}
 
 	public enum ErrorCode {
-		OK, INVALID_ARGUMENT_FORMAT, UNEXPECTED_ARGUMENT, INVALID_ARGUMENT_NAME,
+		OK, INVALID_FORMAT, INVALID_ARGUMENT_FORMAT, UNEXPECTED_ARGUMENT, INVALID_ARGUMENT_NAME,
 		MISSING_STRING,
 		MISSING_INTEGER, INVALID_INTEGER,
-		MISSING_DOUBLE, INVALID_DOUBLE, INVALID_FORMAT
+		MISSING_DOUBLE, INVALID_DOUBLE
 	}
 }

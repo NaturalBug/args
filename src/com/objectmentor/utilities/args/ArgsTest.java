@@ -129,11 +129,11 @@ public class ArgsTest extends TestCase {
 	}
 
 	public void testMissingDouble() throws Exception {
-		Args args = new Args("x##", new String[] { "-x" });
-		assertFalse(args.isValid());
-		assertEquals(0, args.cardinality());
-		assertFalse(args.has('x'));
-		assertEquals(0.0, args.getDouble('x'), 0.01);
-		assertEquals("Could not find double parameter for -x.", args.errorMessage());
+		try {
+			new Args("x##", new String[] { "-x" });
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.MISSING_DOUBLE, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
 	}
 }

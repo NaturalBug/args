@@ -17,7 +17,7 @@ public class IntegerArgumentMarshaler implements ArgumentMarshaler {
 		} catch (NoSuchElementException e) {
 			throw new ArgsException(ErrorCode.MISSING_INTEGER);
 		} catch (NumberFormatException e) {
-			throw new ArgsException(ErrorCode.INVALID_INTEGER);
+			throw new ArgsException(ErrorCode.INVALID_INTEGER, parameter);
 		}
 	}
 

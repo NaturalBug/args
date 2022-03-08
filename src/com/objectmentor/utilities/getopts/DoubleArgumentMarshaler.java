@@ -18,7 +18,7 @@ public class DoubleArgumentMarshaler implements ArgumentMarshaler {
 		} catch (NoSuchElementException e) {
 			throw new ArgsException(ErrorCode.MISSING_DOUBLE);
 		} catch (NumberFormatException e) {
-			throw new ArgsException(ErrorCode.INVALID_DOUBLE);
+			throw new ArgsException(ErrorCode.INVALID_DOUBLE, parameter);
 		}
 	}
 
