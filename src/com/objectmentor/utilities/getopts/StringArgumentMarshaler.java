@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import com.objectmentor.utilities.args.ArgsException;
 import com.objectmentor.utilities.args.ArgsException.ErrorCode;
 
-public class StringArgumentMarshaler extends ArgumentMarshaler {
+public class StringArgumentMarshaler implements ArgumentMarshaler {
 	private String stringValue = "";
 
 	public void set(Iterator<String> currentArgument) throws ArgsException {
@@ -15,9 +15,6 @@ public class StringArgumentMarshaler extends ArgumentMarshaler {
 		} catch (NoSuchElementException e) {
 			throw new ArgsException(ErrorCode.MISSING_STRING);
 		}
-	}
-
-	public void set(String s) {
 	}
 
 	public Object get() {
