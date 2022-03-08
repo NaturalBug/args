@@ -18,7 +18,7 @@ public class Args {
 	private List<String> argList;
 
 	enum ErrorCode {
-		OK, MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER, UNEXPECTED_ARGUMENT
+		OK, MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER, UNEXPECTED_ARGUMENT, INVALID_DOUBLE, MISSING_DOUBLE
 	}
 
 	public Args(String schema, String[] args) throws ParseException {
@@ -135,6 +135,10 @@ public class Args {
 				return String.format("Argument -%c expects an integer but was '%s' .", errorArgumentId, errorParameter);
 			case MISSING_INTEGER:
 				return String.format("Could not find integer parameter for -%c.", errorArgumentId);
+			case INVALID_DOUBLE:
+				return String.format("Argument -%c excepts a double but was '%s'.", errorArgumentId, errorParameter);
+			case MISSING_DOUBLE:
+				return String.format("Could not find double parameter for -%c.", errorArgumentId);
 		}
 		return "";
 	}
