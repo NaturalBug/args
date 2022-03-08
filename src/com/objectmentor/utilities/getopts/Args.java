@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import com.objectmentor.utilities.args.ArgsException;
+import com.objectmentor.utilities.getopts.Args.ErrorCode;
 
 public class Args {
 	private String schema;
@@ -116,39 +117,16 @@ public class Args {
 			if (m instanceof BooleanArgumentMarshaler)
 				m.set(currentArgument);
 			else if (m instanceof StringArgumentMarshaler)
-				setStringArg(m);
-			else if (m instanceof IntegerArgumentMarshaler)
-				setIntArgs(m);
+				m.set(currentArgument);
+			else if (m instanceof IntegerArgumentMarshaler) {
+				m.set(currentArgument);
+			}
 		} catch (ArgsException e) {
 			valid = false;
 			errorArgumentId = argChar;
 			throw e;
 		}
 		return true;
-	}
-
-	private void setStringArg(ArgumentMarshaler m) throws ArgsException {
-		try {
-			m.set(currentArgument.next());
-		} catch (NoSuchElementException e) {
-			errorCode = ErrorCode.MISSING_STRING;
-			throw new ArgsException();
-		}
-	}
-
-	private void setIntArgs(ArgumentMarshaler m) throws ArgsException {
-		String parameter = null;
-		try {
-			parameter = currentArgument.next();
-			m.set(parameter);
-		} catch (NoSuchElementException e) {
-			errorCode = ErrorCode.MISSING_INTEGER;
-			throw new ArgsException();
-		} catch (ArgsException e) {
-			errorParameter = parameter;
-			errorCode = ErrorCode.INVALID_INTEGER;
-			throw e;
-		}
 	}
 
 	public int cardinality() {
